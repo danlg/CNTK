@@ -204,7 +204,7 @@ namespace CNTK
                 deviceValueData = valueData;
         }
         else
-            deviceValueData = valueData->DeepClone(device, readOnly);
+        deviceValueData = valueData->DeepClone(device, readOnly);
 
         return MakeSharedObject<Value>(deviceValueData, deviceValueMask);
     }
@@ -223,7 +223,7 @@ namespace CNTK
                 InvalidArgument("Value::Create:: The number of elements in the vector containing sequence data must be a multiple of the size of specified sampel shape");
 
             auto sequenceLength = currentSequence.size() / numElementsPerSample;
-            auto sequenceDataShape = sampleShape.AppendShape({ sequenceLength });
+            auto sequenceDataShape = sampleShape.AppendShape({sequenceLength});
             sequencesData.push_back(MakeSharedObject<NDArrayView>(sequenceDataShape, currentSequence));
         }
 
@@ -276,6 +276,28 @@ namespace CNTK
             }
         }
     }
+
+    template <typename ElementType>
+    void CopyTo(Variable variable, const std::vector<std::vector<ElementType>>& sequences)
+    {
+        // Check the data type matches
+        if (AsDataType<ElementType>() != GetDataType())
+            InvalidArgument("The specified ElementType %s does not match the DataType %s", typeid(ElementType).name(), DataTypeName(m_dataType));
+
+        // Check the variable has both sequence and batch axis.
+        if (variable.DynamicAxes() != 2)
+            InvalidArgument("The variable does not have 2 dynamic axes, one as the sequence axis and the other as the batch axis.");
+
+        // Check the shape matches.
+        if (variable.Shape() != Shape().Subshape(0, Shape().Rank() - 2))
+            InvalidArgument("The variable and the value does not have the same tensor shape.");
+
+        // Todo: convert sparse into dense.
+        if (GetStorageFormat() != StorageFormat::Dense)
+            InvalidArgument("Only the dense storage format is supported now.");
+
+    }
+
 
     void PackedValue::Unpack() const
     {
