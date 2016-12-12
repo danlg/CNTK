@@ -288,14 +288,40 @@ namespace CNTK
         if (variable.DynamicAxes() != 2)
             InvalidArgument("The variable does not have 2 dynamic axes, one as the sequence axis and the other as the batch axis.");
 
+<<<<<<< Updated upstream
         // Check the shape matches.
         if (variable.Shape() != Shape().Subshape(0, Shape().Rank() - 2))
+=======
+        auto valueRank = Shape().Rank();
+        // Check the shape matches.
+        if (variable.Shape() != Shape().Subshape(0, valueRank - 2))
+>>>>>>> Stashed changes
             InvalidArgument("The variable and the value does not have the same tensor shape.");
 
         // Todo: convert sparse into dense.
         if (GetStorageFormat() != StorageFormat::Dense)
             InvalidArgument("Only the dense storage format is supported now.");
 
+<<<<<<< Updated upstream
+=======
+        // Copy data to the CPU device if required.
+        NDArrayViewPtr cpuArrayView;
+        if (Device != DeviceDescriptor::CPUDevice())
+        {
+            cpuArrayView = m_data->DeepClone(DeviceDescriptor::CPUDevice());
+        }
+        else
+        {
+            cpuArrayView = m_data;
+        }
+
+        auto numOfSequences = Shape[valueRank - 1];
+        for (auto seqIndex = 0; seqIndex < numOfSequences; seqIndex++)
+        {
+
+        }
+
+>>>>>>> Stashed changes
     }
 
 
