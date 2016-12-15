@@ -935,7 +935,9 @@ namespace CNTK
         /// The Value should have the same axes as variable.
         ///
         template <typename ElementType>
-        CNTK_API void CopyTo(const Variable& variable, const std::vector<std::vector<ElementType>>& sequences);
+        CNTK_API void CopyTo(const NDShape& sampleShape, std::vector<std::vector<ElementType>>& outputData);
+
+        CNTK_API void CopyTo(const NDShape& sampleShape, std::vector<std::vector<size_t>>& outputData);
 
     private:
         CNTK_API static ValuePtr Create(const NDShape& sampleShape, const std::vector<NDArrayViewPtr>& sequences, const std::vector<bool>& sequenceStartFlags, const DeviceDescriptor& device, bool readOnly, bool createNewCopy);
